@@ -1,7 +1,9 @@
 """API views"""
 import json
 
-from django.http import JsonResponse
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, JsonResponse
+from products.models import Product
 
 
 def api_home(request, *args, **kwargs):
@@ -11,20 +13,13 @@ def api_home(request, *args, **kwargs):
         request (HttpRequest): HttpRequest instance from Django
 
     Returns:
-        _type_: _description_
+        _type_: _description
     """
-    print(request.GET)
-    print(request.POST)
-    body = request.body  # byte string of request.body
+    model_data = Product.objects.all().order_by("?").first()
     data = {}
-    try:
-        data = json.loads(body)  # String of JSON -> Python dict
-    except:
-        pass
-
-    print(data)
-    print(request.headers)
-    # HttpHeaders - not JSON serializable
-    data["headers"] = dict(request.headers)
-    data["content_type"] = request.content_type
-    return JsonResponse(data)
+    if model_data:
+        data = model_to_dict(model_data, fields=["content", "title", "price"])
+        # model instance (model_data) -> Python dict -> JSON to client
+        json_data_str = json.dumps(data)
+    return HttpResponse(json_data_str,
+                        headers={"content-type": "application/json"})
