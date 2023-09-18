@@ -5,8 +5,8 @@ import requests
 # ENDPOINT = "https://httpbin.org/anything"
 ENDPOINT = "http://127.0.0.1:8000/api/"
 
-get_response = requests.get(
-    ENDPOINT, json={"query": "Hello World"}, timeout=2000
+get_response = requests.post(
+    ENDPOINT, json={"title": "This is a POST endpoint"}, timeout=2000
 )
 
 # print(get_response.text)
