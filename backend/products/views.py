@@ -3,7 +3,7 @@
 from django.shortcuts import get_object_or_404
 
 # from django.http import Http404
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -62,6 +62,12 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
 
 
 class ProductDeleteAPIView(generics.DestroyAPIView):
+    """_summary_
+
+    Args:
+        generics (_type_): _description_
+    """
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -72,6 +78,49 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
             instance (_type_): _description_
         """
         super().perform_destroy(instance)
+
+
+class ProductMixinsView(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
+    """_summary_
+
+    Args:
+        mixins (_type_): _description_
+        generics (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    # RetrieveModelMixin is the one concerned with the field
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        """_summary_
+
+        Args:
+            request (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        # The list method is coming from the ListModelMixin class
+        # print(args, kwargs)
+        pk = kwargs.get("pk")
+        if pk is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    # todo use mixins to implement update and delete
 
 
 # class ProductListAPIView(generics.ListAPIView):

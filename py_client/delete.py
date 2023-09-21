@@ -14,9 +14,11 @@ if PRODUCT_ID is not None:
     try:
         get_response = requests.delete(ENDPOINT, timeout=5)
         if get_response.status_code == 204:
-            print(f"Product with ID {PRODUCT_ID} has been deleted succesfully")
+            print(
+                f"Product with ID {PRODUCT_ID} has been deleted successfully"
+                )
         else:
-            print(f"Failed to delete prouct with ID {PRODUCT_ID}.")
+            print(f"Failed to delete product with ID {PRODUCT_ID}.")
             print(f"Status code: {get_response.status_code}")
     except requests.exceptions.RequestException as e:
         print(f"An error occurred while making the request: {e}")
