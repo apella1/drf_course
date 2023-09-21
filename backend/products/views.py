@@ -1,5 +1,11 @@
 """API Views"""
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+
+# from django.http import Http404
 from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -17,7 +23,13 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     # lookup_field = "pk"
 
 
-class ProductCreateAPIView(generics.CreateAPIView):
+class ProductListCreateAPIView(generics.ListCreateAPIView):
+    """_summary_
+
+    Args:
+        generics (_type_): _description_
+    """
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -31,5 +43,45 @@ class ProductCreateAPIView(generics.CreateAPIView):
         serializer.save(content=content)
 
 
+class ProductListAPIView(generics.ListAPIView):
+    """_summary_
+
+    Args:
+        generics (_type_): _description_
+    """
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
 # also possible to assign the class
 # product_detail_api_view = ProductDetailAPIView.as_view()
+
+
+@api_view(["GET", "POST"])
+def product_alt_view(request, pk=None, *args, **kwargs):
+    method = request.method
+
+    if method == "GET":
+        if pk is not None:
+            # detail view
+            query_set = Product.objects.filter(pk=pk)
+            if not query_set.exists():
+                raise Http404
+            return Response(query_set)
+        # Else isn't necessary in this case. Leaving it in for clarity
+        else:
+            # list view
+            query_set = Product.objects.all()
+            query_set = ProductSerializer(query_set, many=True).data
+            return Response(query_set)
+            # get data -> list view or detail view
+            # url_args
+    if method == "POST":
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            # instance = serializer.save()
+            # similar to pure Django's forms.save()
+            # print(instance)
+            return Response(serializer.data)
+        return Response({"Invalid": "Data is not valid"}, status=400)
