@@ -84,6 +84,8 @@ class ProductMixinsView(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
     generics.GenericAPIView,
 ):
     """_summary_
@@ -121,6 +123,11 @@ class ProductMixinsView(
         return self.create(request, *args, **kwargs)
 
     # todo use mixins to implement update and delete
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 # class ProductListAPIView(generics.ListAPIView):
