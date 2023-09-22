@@ -35,7 +35,8 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     # * For function-based views, decorators provide similar functionalities
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [IsStaffEditorPermission]
+    # ordering of the permission matching is important
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_create(self, serializer):
         # serializer = self.request.user
