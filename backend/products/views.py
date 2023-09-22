@@ -3,12 +3,13 @@
 from django.shortcuts import get_object_or_404
 
 # from django.http import Http404
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, permissions, authentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import Product
 from .serializers import ProductSerializer
+from .permissions import IsStaffEditorPermission
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
@@ -32,6 +33,9 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    # * For function-based views, decorators provide similar functionalities
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [IsStaffEditorPermission]
 
     def perform_create(self, serializer):
         # serializer = self.request.user
@@ -98,6 +102,8 @@ class ProductMixinsView(
         _type_: _description_
     """
 
+    # todo test out authentication and permissions for the mixins view
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # RetrieveModelMixin is the one concerned with the field
@@ -122,7 +128,6 @@ class ProductMixinsView(
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-    # todo use mixins to implement update and delete
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
