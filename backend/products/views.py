@@ -1,15 +1,16 @@
 """API Views"""
 # from django.http import Http404
+from api.authentication import TokenAuthentication
 from django.shortcuts import get_object_or_404
 
 # from django.http import Http404
-from rest_framework import generics, mixins, permissions, authentication
+from rest_framework import authentication, generics, mixins, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import Product
-from .serializers import ProductSerializer
 from .permissions import IsStaffEditorPermission
+from .serializers import ProductSerializer
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
@@ -34,7 +35,10 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # * For function-based views, decorators provide similar functionalities
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        TokenAuthentication,
+    ]
     # ordering of the permission matching is important
     permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
