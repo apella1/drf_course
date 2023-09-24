@@ -26,7 +26,8 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
-    """_summary_
+    """Class-based view allowing for creating and listing of products
+    The allowed methods for the view are POST and GET
 
     Args:
         generics (_type_): _description_
@@ -35,10 +36,12 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # * For function-based views, decorators provide similar functionalities
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        TokenAuthentication,
-    ]
+    # * the authentication classes are provided as defaults
+    # * in the settings.py file
+    # authentication_classes = [
+    #     authentication.SessionAuthentication,
+    #     TokenAuthentication,
+    # ]
     # ordering of the permission matching is important
     permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
