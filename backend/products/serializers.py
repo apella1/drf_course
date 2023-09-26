@@ -21,7 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
         """_summary_"""
 
         model = Product
-        fields = ["title", "content", "price", "sale_price", "my_discount"]
+        fields = ["pk", "title", "content", "price", "sale_price", "my_discount"]
 
     def get_my_discount(self, obj):
         """_summary_
