@@ -1,15 +1,13 @@
 """API Views"""
-# from django.http import Http404
-from api.authentication import TokenAuthentication
+from api.mixins import StaffEditorPermissionMixin
 from django.shortcuts import get_object_or_404
 
 # from django.http import Http404
-from rest_framework import authentication, generics, mixins, permissions
+from rest_framework import generics, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import Product
-from .permissions import IsStaffEditorPermission
 from .serializers import ProductSerializer
 
 
@@ -25,7 +23,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     # lookup_field = "pk"
 
 
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(StaffEditorPermissionMixin, generics.ListCreateAPIView):
     """Class-based view allowing for creating and listing of products
     The allowed methods for the view are POST and GET
 
@@ -43,7 +41,6 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     #     TokenAuthentication,
     # ]
     # ordering of the permission matching is important
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_create(self, serializer):
         # serializer = self.request.user
@@ -55,7 +52,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
         serializer.save(content=content)
 
 
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(StaffEditorPermissionMixin, generics.UpdateAPIView):
     """_summary_
 
     Args:
@@ -73,7 +70,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             instance.content = instance.title
 
 
-class ProductDeleteAPIView(generics.DestroyAPIView):
+class ProductDeleteAPIView(StaffEditorPermissionMixin, generics.DestroyAPIView):
     """_summary_
 
     Args:
@@ -84,7 +81,7 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
 
     def perform_destroy(self, instance):
-        """_summary_
+        """Deleting a product
 
         Args:
             instance (_type_): _description_
@@ -93,6 +90,7 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
 
 
 class ProductMixinsView(
+    StaffEditorPermissionMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
