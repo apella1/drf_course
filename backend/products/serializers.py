@@ -2,6 +2,7 @@
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
 from .models import Product
 
 
@@ -17,8 +18,13 @@ class ProductSerializer(serializers.ModelSerializer):
     # ModelSerializer assumes an instance(saved data) is attached to the model
 
     my_discount = serializers.SerializerMethodField(read_only=True)
-    url = serializers.SerializerMethodField(read_only=True)
     edit_url = serializers.SerializerMethodField(read_only=True)
+    # HyperlinkedIdentityField can only be used
+    # within the ModelSerializer class
+    url = serializers.HyperlinkedIdentityField(
+        view_name="product-detail", lookup_field="pk"
+    )
+    # email = serializers.EmailField(write_only=True)
 
     class Meta:
         """_summary_"""
@@ -35,6 +41,20 @@ class ProductSerializer(serializers.ModelSerializer):
             "my_discount",
         ]
 
+    # def create(self, validated_data):
+    #     # return Product.objects.create(**validated_data)
+    #     # email = validated_data.pop("email")
+    #     obj = super().create(validated_data)
+    #     # print(email, obj)
+    #     return obj
+
+    # def update(self, instance, validated_data):
+    #     # instance.title = validated_data.get("title")
+    #     # return instance
+    #     email = validated_data.pop("email")
+    #     print(email)
+    #     return super().update(instance, validated_data)
+
     def get_my_discount(self, obj):
         """Getting the my_discount property"""
         # try:
@@ -47,17 +67,23 @@ class ProductSerializer(serializers.ModelSerializer):
             return None
         return obj.get_discount()
 
-    def get_url(self, obj):
-        """Getting the url of an individual product"""
-        request = self.context.get("request")
+    # * using SerializerMethodField for this
+    # * i.e url = serializers.SerializerMethodField(read_only=True)
 
-        return (
-            None
-            if request is None
-            else reverse("product-detail", kwargs={"pk": obj.pk}, request=request)
-        )
+    # def get_url(self, obj):
+    #     """Getting the url of an individual product"""
+    #     request = self.context.get("request")
 
-        # return f"/api/products/{obj.pk}"
+    #     return (
+    #         None
+    #         if request is None
+    #         else reverse(
+    #               viewname="product-detail",
+    #               kwargs={"pk": obj.pk},
+    #               request=request
+    #           )
+
+    # return f"/api/products/{obj.pk}"
 
     def get_edit_url(self, obj):
         """Getting the url of an individual product's update page"""
